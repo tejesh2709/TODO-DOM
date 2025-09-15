@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #5664a6 0%, #9963d0 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            align-items: center;
+        }
+
+        .input-section input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 18px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-section input:focus {
+            border-color: #5664a6;
+            box-shadow: 0 0 0 3px rgba(86, 100, 166, 0.2);
+        }
+
+        .input-section button {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #5664a6, #9963d0);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .input-section button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(86, 100, 166, 0.3);
+        }
+
+        #todo-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .todo-item {
+            background: #f8f9fa;
+            margin-bottom: 15px;
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            border-left: 4px solid #5664a6;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .todo-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .todo-text {
+            flex: 1;
+            font-size: 18px;
+            color: #333;
+            font-weight: 500;
+            padding-right: 20px;
+            line-height: 1.4;
+        }
+
+        .todo-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .todo-buttons button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .edit-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #218838;
+            transform: scale(1.05);
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+            transform: scale(1.05);
+        }
+
+        .save-btn {
+            background: #007bff;
+            color: white;
+        }
+
+        .save-btn:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .cancel-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background: #545b62;
+            transform: scale(1.05);
+        }
+
+        /* Edit mode styles */
+        .todo-item input[type="text"] {
+            flex-grow: 1;
+            margin-right: 10px;
+            padding: 12px 15px;
+            border: 2px solid #5664a6;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .todo-item input[type="text"]:focus {
+            box-shadow: 0 0 0 3px rgba(86, 100, 166, 0.2);
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin-top: 30px;
+            padding: 40px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px dashed #dee2e6;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .input-section {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .todo-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .todo-text {
+                padding-right: 0;
+                margin-bottom: 10px;
+            }
+
+            .todo-buttons {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TODO LIST</h1>
+        
+        <div class="input-section">
+            <input type="text" placeholder="Enter a new task...">
+            <button onclick="addtodo()">Add Todo</button>
+        </div>
+        
+        <ul id="todo-list"></ul>
+    </div>
+
+    <script>
+        let ctr = 1;
+        
+        function deltodo(index) {
+            const element = document.getElementById("todo-" + index);
+            element.parentNode.removeChild(element);
+            
+            // Check if list is empty and show empty state
+            checkEmptyState();
+        }
+        
+        function edittodo(index) {
+            const todoLi = document.getElementById("todo-" + index);
+            const textDiv = todoLi.querySelector(".todo-text");
+            const currentText = textDiv.innerText;
+            
+            // Replace content with input field and save/cancel buttons
+            todoLi.innerHTML = 
+                "<input type='text' value='" + currentText + "' id='edit-input-" + index + "' style='flex-grow: 1; margin-right: 10px;'>" +
+                "<div class='todo-buttons'>" +
+                    "<button class='save-btn' onclick='savetodo(" + index + ")'>Save</button>" +
+                    "<button class='cancel-btn' onclick='canceledit(" + index + ", \"" + currentText + "\")'>Cancel</button>" +
+                "</div>";
+            
+            // Focus and select the input text
+            const editInput = document.getElementById("edit-input-" + index);
+            editInput.focus();
+            editInput.select();
+            
+            // Add Enter key event listener to save the todo
+            editInput.addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    savetodo(index);
+                } else if (event.key === "Escape") {
+                    canceledit(index, currentText);
+                }
+            });
+        }
+        
+        function savetodo(index) {
+            const editInput = document.getElementById("edit-input-" + index);
+            const newText = editInput.value.trim();
+            
+            if (!newText) {
+                alert("Todo cannot be empty!");
+                return;
+            }
+            
+            const todoLi = document.getElementById("todo-" + index);
+            // Restore normal view with updated text
+            todoLi.innerHTML = 
+                "<div class='todo-text'>" + newText + "</div>" +
+                "<div class='todo-buttons'>" +
+                    "<button class='edit-btn' onclick='edittodo(" + index + ")'>Edit</button>" +
+                    "<button class='delete-btn' onclick='deltodo(" + index + ")'>Delete</button>" +
+                "</div>";
+        }
+        
+        function canceledit(index, originalText) {
+            const todoLi = document.getElementById("todo-" + index);
+            // Restore original view without changes
+            todoLi.innerHTML = 
+                "<div class='todo-text'>" + originalText + "</div>" +
+                "<div class='todo-buttons'>" +
+                    "<button class='edit-btn' onclick='edittodo(" + index + ")'>Edit</button>" +
+                    "<button class='delete-btn' onclick='deltodo(" + index + ")'>Delete</button>" +
+                "</div>";
+        }
+        
+        function addtodo() {
+            const inputval = document.querySelector("input");
+            const value = inputval.value.trim();
+            if (!value) {
+                alert("Please enter a todo item");
+                return;
+            }
+
+            // Remove empty state if it exists
+            removeEmptyState();
+
+            // Create li element
+            const newli = document.createElement("li");
+            newli.setAttribute("id", "todo-" + ctr);
+            newli.className = "todo-item";
+            newli.innerHTML = 
+                "<div class='todo-text'>" + value + "</div>" +
+                "<div class='todo-buttons'>" +
+                    "<button class='edit-btn' onclick='edittodo(" + ctr + ")'>Edit</button>" +
+                    "<button class='delete-btn' onclick='deltodo(" + ctr + ")'>Delete</button>" +
+                "</div>";
+            
+            // Add to the ul element
+            document.getElementById("todo-list").appendChild(newli);
+            inputval.value = "";
+            inputval.focus();
+            ctr++;
+        }
+        
+        function checkEmptyState() {
+            const todoList = document.getElementById("todo-list");
+            if (todoList.children.length === 0) {
+                const emptyState = document.createElement("div");
+                emptyState.className = "empty-state";
+                emptyState.id = "empty-state";
+                emptyState.innerHTML = "No tasks yet. Add one above! 📝";
+                todoList.appendChild(emptyState);
+            }
+        }
+        
+        function removeEmptyState() {
+            const emptyState = document.getElementById("empty-state");
+            if (emptyState) {
+                emptyState.remove();
+            }
+        }
+        
+        // Add Enter key functionality to input
+        document.querySelector("input").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                addtodo();
+            }
+        });
+        
+        // Initialize empty state on page load
+        checkEmptyState();
+    </script>
+</body>
+</html>
